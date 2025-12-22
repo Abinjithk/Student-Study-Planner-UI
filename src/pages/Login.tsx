@@ -38,7 +38,7 @@ const Login: React.FC = () => {
 
         <button
           type="submit"
-          className="mt-2 p-2 text-base bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+          className="mt-2 p-2 text-base bg-green-600 text-white rounded hover:bg-green-800 transition"
         >
           Login
         </button>
