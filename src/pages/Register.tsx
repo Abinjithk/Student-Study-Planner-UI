@@ -5,11 +5,31 @@ const Register: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Register data:", { name, email, password });
-    // TODO: connect to backend
-  };
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  try {
+    const res = await fetch("http://127.0.0.1:8000/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, email, password }),
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      alert(err.detail || "Registration failed");
+      return;
+    }
+
+    const data = await res.json(); // { access_token, token_type }
+    localStorage.setItem("token", data.access_token);
+     window.location.href = "/dashboard";
+    // Redirect to dashboard or login
+  } catch (error) {
+    console.error(error);
+    alert("Something went wrong");
+  }
+};
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
