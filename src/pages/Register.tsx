@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { jwtDecode }from "jwt-decode";
 
 const Register: React.FC = () => {
   const [name, setName] = useState("");
@@ -6,6 +7,13 @@ const Register: React.FC = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
+   const [loading, setLoading] = useState(false);
+
+     type DecodedToken = {
+  sub: string;
+  role: string;
+  exp: number;
+};
 
    const checkPasswords = (pass: string, confirm: string) => {
     if (pass==confirm){
@@ -18,6 +26,7 @@ const Register: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
+  setLoading(true);
   try {
     const res = await fetch("http://127.0.0.1:8000/auth/register", {
       method: "POST",
@@ -28,16 +37,24 @@ const Register: React.FC = () => {
     if (!res.ok) {
       const err = await res.json();
       alert(err.detail || "Registration failed");
+      setLoading(false);
       return;
     }
 
     const data = await res.json(); // { access_token, token_type }
     localStorage.setItem("token", data.access_token);
+     const decoded = jwtDecode<DecodedToken>(data.access_token);
+    
+        // ✅ Store role + email (optional)
+        localStorage.setItem("role", decoded.role);
+        localStorage.setItem("email", decoded.sub);
      window.location.href = "/dashboard";
+       setLoading(false);
     // Redirect to dashboard or login
   } catch (error) {
     console.error(error);
     alert("Something went wrong");
+      setLoading(false);
   }
 };
 
@@ -94,11 +111,23 @@ const Register: React.FC = () => {
         </div>
 
         <button
-          type="submit"
-          className="mt-2 p-2 text-base bg-green-700 text-white rounded hover:bg-green-800 transition"
-        >
-          Create Account
-        </button>
+  type="submit"
+  disabled={loading}
+  className={`mt-2 p-2 text-base rounded transition flex items-center justify-center gap-2
+    ${loading
+      ? "bg-green-400 cursor-not-allowed"
+      : "bg-green-600 hover:bg-green-800 text-white"
+    }`}
+>
+  {loading ? (
+    <>
+      <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+      Please wait...
+    </>
+  ) : (
+    "Create Account"
+  )}
+</button>
       </form>
     </div>
   );

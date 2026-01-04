@@ -1,11 +1,20 @@
 import React, { useState } from "react";
+import { jwtDecode }from "jwt-decode";
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  type DecodedToken = {
+  sub: string;
+  role: string;
+  exp: number;
+};
 
  const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
+  setLoading(true);
 
   const res = await fetch("http://localhost:8000/auth/login", {
     method: "POST",
@@ -17,9 +26,18 @@ const Login: React.FC = () => {
   if (res.ok) {
     const data = await res.json(); // { access_token, token_type }
     localStorage.setItem("token", data.access_token);
+
+    const decoded = jwtDecode<DecodedToken>(data.access_token);
+
+    // ✅ Store role + email (optional)
+    localStorage.setItem("role", decoded.role);
+    localStorage.setItem("email", decoded.sub);
+
     window.location.href = "/dashboard";
+    setLoading(false);
   } else {
     alert("Invalid login");
+    setLoading(false);
   }
 };
 
@@ -51,11 +69,24 @@ const Login: React.FC = () => {
         />
 
         <button
-          type="submit"
-          className="mt-2 p-2 text-base bg-green-600 text-white rounded hover:bg-green-800 transition"
-        >
-          Login
-        </button>
+  type="submit"
+  disabled={loading}
+  className={`mt-2 p-2 text-base rounded transition flex items-center justify-center gap-2
+    ${loading
+      ? "bg-green-400 cursor-not-allowed"
+      : "bg-green-600 hover:bg-green-800 text-white"
+    }`}
+>
+  {loading ? (
+    <>
+      <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+      Please wait...
+    </>
+  ) : (
+    "Login"
+  )}
+</button>
+
       </form>
     </div>
   );
