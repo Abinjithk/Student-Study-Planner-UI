@@ -52,23 +52,24 @@ const Admin: React.FC = () => {
      Delete User
   ======================= */
   const deleteUser = async (id: number) => {
-    if (!window.confirm("Are you sure you want to delete this user?")) return;
+  if (!window.confirm("Are you sure you want to delete this user?")) return;
 
-    try {
-      const token = localStorage.getItem("access_token");
+  try {
+    const token = localStorage.getItem("token");
 
-      await fetch(`http://localhost:8000/admin/users/${id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+    await fetch(`http://localhost:8000/admin/delete_user/${id}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-      setUsers(prev => prev.filter(user => user.id !== id));
-    } catch {
-      alert("Failed to delete user");
-    }
-  };
+    setUsers(prev => prev.filter(user => user.id !== id));
+  } catch {
+    alert("Failed to delete user");
+  }
+};
+
 
   return (
     <Layout>

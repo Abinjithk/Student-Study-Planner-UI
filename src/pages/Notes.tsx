@@ -1,116 +1,128 @@
 import { useState } from "react";
 import Layout from "../components/Layout";
 
-interface Note {
-  id: number;
-  title: string;
-  content: string;
-}
-
 const Notes: React.FC = () => {
-  const [notes, setNotes] = useState<Note[]>([]);
+  const [notes, setNotes] = useState<any[]>([]);
+  const [showModal, setShowModal] = useState(false);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [search, setSearch] = useState("");
+  const [file, setFile] = useState<File | null>(null);
 
   const addNote = () => {
-    if (!title || !content) return;
+    if (!title || (!content && !file)) return;
 
-    setNotes([
-      ...notes,
-      { id: Date.now(), title, content },
+    setNotes(prev => [
+      ...prev,
+      {
+        id: Date.now(),
+        title,
+        content,
+        file,
+      },
     ]);
 
     setTitle("");
     setContent("");
+    setFile(null);
+    setShowModal(false);
   };
-
-  const deleteNote = (id: number) => {
-    setNotes(notes.filter(note => note.id !== id));
-  };
-
-  const filteredNotes = notes.filter(
-    note =>
-      note.title.toLowerCase().includes(search.toLowerCase()) ||
-      note.content.toLowerCase().includes(search.toLowerCase())
-  );
 
   return (
     <Layout>
       <div className="max-w-7xl mx-auto px-6 py-10">
 
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-1">Notes</h1>
-          <p className="text-slate-400">
-            Create, search, and organize your study notes.
-          </p>
-        </div>
-
-        <div className="grid gap-6 lg:grid-cols-3">
-
-          {/* Add Note */}
-          <div className="bg-slate-800 rounded-xl p-6">
-            <h2 className="text-xl font-semibold mb-4">➕ New Note</h2>
-
-            <input
-              type="text"
-              placeholder="Title"
-              value={title}
-              onChange={e => setTitle(e.target.value)}
-              className="w-full p-2 rounded mb-3 bg-slate-700 focus:outline-none"
-            />
-
-            <textarea
-              placeholder="Content"
-              value={content}
-              onChange={e => setContent(e.target.value)}
-              rows={5}
-              className="w-full p-2 rounded mb-3 bg-slate-700 focus:outline-none"
-            />
-
-            <button
-              onClick={addNote}
-              className="w-full bg-blue-600 hover:bg-blue-700 transition rounded-lg py-2 font-semibold"
-            >
-              Add Note
-            </button>
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-3xl font-bold">My Notes</h1>
+            <p className="text-slate-400">All your saved notes</p>
           </div>
 
-          {/* Notes List */}
-          <div className="lg:col-span-2 bg-slate-800 rounded-xl p-6">
-            <h2 className="text-xl font-semibold mb-4">📝 Your Notes</h2>
-
-            <input
-              type="text"
-              placeholder="Search notes..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              className="w-full p-2 rounded mb-4 bg-slate-700 focus:outline-none"
-            />
-
-            {filteredNotes.length === 0 ? (
-              <p className="text-slate-400">No notes found.</p>
-            ) : (
-              <ul className="space-y-3">
-                {filteredNotes.map(note => (
-                  <li key={note.id} className="bg-slate-700 rounded-lg p-4 flex justify-between items-start">
-                    <div>
-                      <h3 className="font-semibold">{note.title}</h3>
-                      <p className="text-slate-400 text-sm mt-1">{note.content}</p>
-                    </div>
-                    <button
-                      onClick={() => deleteNote(note.id)}
-                      className="ml-4 text-red-500 hover:text-red-400 font-semibold"
-                    >
-                      Delete
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+          <button
+            onClick={() => setShowModal(true)}
+            className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg font-semibold"
+          >
+            ➕ Add Note
+          </button>
         </div>
+
+        {/* Notes List */}
+        {notes.length === 0 ? (
+          <p className="text-slate-400">No notes yet.</p>
+        ) : (
+          <div className="grid gap-4">
+            {notes.map(note => (
+              <div
+                key={note.id}
+                className="bg-slate-800 p-4 rounded-lg flex justify-between"
+              >
+                <div>
+                  <h3 className="font-semibold">{note.title}</h3>
+                  {note.content && (
+                    <p className="text-slate-400 text-sm mt-1">
+                      {note.content.slice(0, 100)}...
+                    </p>
+                  )}
+                  {note.file && (
+                    <p className="text-blue-400 text-sm mt-1">
+                      📄 {note.file.name}
+                    </p>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Modal */}
+        {showModal && (
+          <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+            <div className="bg-slate-900 w-full max-w-md rounded-xl p-6">
+
+              <h2 className="text-xl font-semibold mb-4">Add Note</h2>
+
+              <input
+                type="text"
+                placeholder="Title"
+                value={title}
+                onChange={e => setTitle(e.target.value)}
+                className="w-full mb-3 p-2 rounded bg-slate-700 focus:outline-none"
+              />
+
+              {/* Text Note */}
+              <textarea
+                placeholder="Write your note..."
+                value={content}
+                onChange={e => setContent(e.target.value)}
+                rows={4}
+                className="w-full mb-3 p-2 rounded bg-slate-700 focus:outline-none"
+              />
+
+              {/* File Upload */}
+              <input
+                type="file"
+                onChange={e => setFile(e.target.files?.[0] || null)}
+                className="mb-4 text-sm"
+              />
+
+              <div className="flex justify-end gap-3">
+                <button
+                  onClick={() => setShowModal(false)}
+                  className="px-4 py-2 rounded bg-slate-700"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={addNote}
+                  className="px-4 py-2 rounded bg-blue-600 font-semibold"
+                >
+                  Save
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
       </div>
     </Layout>
   );
