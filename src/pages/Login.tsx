@@ -6,11 +6,14 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  type DecodedToken = {
+  interface DecodedToken {
   sub: string;
   role: string;
-  exp: number;
-};
+  email: string;
+  name: string;
+  exp: number; // optional but recommended
+}
+
 
  const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
@@ -31,7 +34,10 @@ const Login: React.FC = () => {
 
     // ✅ Store role + email (optional)
     localStorage.setItem("role", decoded.role);
-    localStorage.setItem("email", decoded.sub);
+    localStorage.setItem("id", decoded.sub);
+    localStorage.setItem("email", decoded.email);
+    localStorage.setItem("name", decoded.name);
+
 
     window.location.href = "/dashboard";
     setLoading(false);
