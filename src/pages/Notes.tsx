@@ -77,6 +77,9 @@ const Notes: React.FC = () => {
       formData.append("content", content);
       // file upload not implemented yet
       // if (file) formData.append("file", file);
+      if (file) {
+      formData.append("file", file);
+    }
 
       const response = await fetch(`${API_URL}/create_notes`, {
         method: "POST",
