@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import Layout from "../components/Layout";
 
+const API_URL = import.meta.env.VITE_FAST_API_URL;
+
 const Admin: React.FC = () => {
   const [users, setUsers] = useState<{
     id: number;
@@ -24,7 +26,7 @@ const Admin: React.FC = () => {
           throw new Error("No authentication token found");
         }
 
-        const response = await fetch("http://127.0.0.1:8000/admin/get_all_users", {
+        const response = await fetch(`${API_URL}/admin/get_all_users`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -57,7 +59,7 @@ const Admin: React.FC = () => {
   try {
     const token = localStorage.getItem("token");
 
-    await fetch(`http://localhost:8000/admin/delete_user/${id}`, {
+    await fetch(`${API_URL}/admin/delete_user/${id}`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,

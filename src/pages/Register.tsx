@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { jwtDecode }from "jwt-decode";
 
+
+const API_URL = import.meta.env.VITE_FAST_API_URL;
+
 const Register: React.FC = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -31,7 +34,7 @@ const Register: React.FC = () => {
   e.preventDefault();
   setLoading(true);
   try {
-    const res = await fetch("http://127.0.0.1:8000/auth/register", {
+    const res = await fetch(`${API_URL}/auth/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, email, password }),

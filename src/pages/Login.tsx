@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { jwtDecode }from "jwt-decode";
 
+
+const API_URL = import.meta.env.VITE_FAST_API_URL;
+
 const Login: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -19,7 +22,7 @@ const Login: React.FC = () => {
   e.preventDefault();
   setLoading(true);
 
-  const res = await fetch("http://localhost:8000/auth/login", {
+  const res = await fetch(`${API_URL}/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",

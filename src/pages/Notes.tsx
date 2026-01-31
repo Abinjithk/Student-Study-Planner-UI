@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import Layout from "../components/Layout";
 
+
+const MAIN_API_URL = import.meta.env.VITE_FAST_API_URL;
+
 interface Note {
   _id: string; // changed to match MongoDB _id
   title: string;
@@ -25,7 +28,7 @@ const Notes: React.FC = () => {
   // Accordion state
   const [openNoteId, setOpenNoteId] = useState<string | null>(null);
 
-  const API_URL = "http://localhost:8000/user"; // your backend URL
+  const API_URL = `${MAIN_API_URL}/user`; // your backend URL
 
   // Fetch notes from backend
   useEffect(() => {
@@ -137,6 +140,27 @@ const Notes: React.FC = () => {
     return acc;
   }, {});
 
+  const handleDownload = (url: string) => {
+  let filename = url.split("/").pop() || "file";
+
+  // Infer extension from Cloudinary URL
+  if (!filename.includes(".")) {
+    // You can inspect URL or default
+    if (url.includes(".pdf")) filename += ".pdf";
+    else if (url.includes(".docx")) filename += ".docx";
+    else if (url.includes(".zip")) filename += ".zip";
+    else filename += ".bin"; // fallback
+  }
+
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
+
   return (
     <Layout>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -195,14 +219,12 @@ const Notes: React.FC = () => {
                           {note.content && <p className="mb-2">{note.content}</p>}
 
                           {note.file_url && (
-                            <a
-                              href={note.file_url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-blue-400 underline"
-                            >
-                              📄 View File
-                            </a>
+                           <button
+  onClick={() => handleDownload(note.file_url!)}
+  className="text-blue-400 underline"
+>
+  📄 View File
+</button>
                           )}
                         </div>
                       )}
