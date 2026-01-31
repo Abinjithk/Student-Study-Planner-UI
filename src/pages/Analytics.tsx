@@ -59,7 +59,7 @@ const Analytics: React.FC = () => {
                   outerRadius={80}
                   label
                 >
-                  {tasksData.map((entry, index) => (
+                  {tasksData.map(( _,index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
