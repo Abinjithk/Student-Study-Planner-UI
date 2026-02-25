@@ -138,10 +138,30 @@ const Navbar: React.FC = () => {
 
           
 
-          {isAuthenticated && (
+          {!isAuthenticated ? (
+            <div className="flex gap-3 pt-2">
+              <Link
+                to="/login"
+                className="flex-1 text-center py-2 text-sm border border-slate-700 rounded-lg hover:bg-slate-800"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Login
+              </Link>
+              <Link
+                to="/register"
+                className="flex-1 text-center py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Sign Up
+              </Link>
+            </div>
+          ) : (
             <button
-              onClick={handleLogout}
-              className="w-full mt-3 bg-red-600 py-2 rounded-lg"
+              onClick={() => {
+                handleLogout();
+                setIsMenuOpen(false);
+              }}
+              className="w-full mt-3 bg-red-600 text-white py-2 rounded-lg hover:bg-red-700"
             >
               Logout
             </button>
