@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { jwtDecode }from "jwt-decode";
+import { useNavigate } from 'react-router-dom';
 
 
 const API_URL = import.meta.env.VITE_FAST_API_URL;
 
 const Login: React.FC = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -42,7 +44,9 @@ const Login: React.FC = () => {
     localStorage.setItem("name", decoded.name);
 
 
-    window.location.href = "/dashboard";
+    // window.location.href = "/dashboard";
+    navigate("/dashboard")
+
     setLoading(false);
   } else {
     alert("Invalid login");
