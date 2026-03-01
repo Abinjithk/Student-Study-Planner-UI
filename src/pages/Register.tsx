@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { jwtDecode }from "jwt-decode";
-import { useNavigate } from 'react-router-dom';
+
 
 
 
 const API_URL = import.meta.env.VITE_FAST_API_URL;
 
 const Register: React.FC = () => {
-  const navigate = useNavigate();
+  
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -59,8 +59,8 @@ const Register: React.FC = () => {
         localStorage.setItem("id", decoded.sub);
         localStorage.setItem("email", decoded.email);
     localStorage.setItem("name", decoded.name);
-    //  window.location.href = "/dashboard";
-     navigate("/dashboard");
+     window.location.href = "/";
+    //  navigate("/dashboard");
        setLoading(false);
     // Redirect to dashboard or login
   } catch (error) {
